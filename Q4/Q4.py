@@ -453,7 +453,7 @@ def internal_path_length(root_node, curr_depth = 0):
 
 
 def q4_experiment():
-    num_trials = 10
+    num_trials = 1000
     for N in [1] + list(range(500, 10001, 500)):
         result_vector = []
         for _ in range(num_trials):
@@ -488,6 +488,7 @@ def main():
 
         print("For {} trials and {} random node insertions, the average path length is {} with std dev {}".format(
             num_trials, N, mean, standard_dev))
+
 
 if __name__ == '__main__':
     main()

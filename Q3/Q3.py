@@ -457,9 +457,8 @@ def red_percentage(llrb):
 
 
 def q3_experiment():
-    print("Running only 1 trial and 10^4 and 10^5 so you don't have to wait")
-    num_trials = 1
-    for N in [10000, 100000]: #, 1000000]:
+    num_trials = 100
+    for N in [10000, 100000, 1000000]:
         results = []
         for _ in range(num_trials):
             shuffled_inserts = list(range(N))

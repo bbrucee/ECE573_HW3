@@ -140,7 +140,6 @@ def main():
         print("Result from select(7) is {}".format(select(tree.root, 7)))
         print("Result from rank(7) is {}".format(rank(tree.root, 7)))
 
-
     except IndexError:
         print("No input data file")
 

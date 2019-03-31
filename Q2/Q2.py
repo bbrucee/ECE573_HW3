@@ -1,4 +1,5 @@
 from random import shuffle
+from matplotlib import pyplot as plt
 
 
 # https://github.com/peterhil/leftrb/blob/master/leftrb/bst.py
@@ -117,7 +118,8 @@ def q2_experiment():
     num_trials = 100
     shuffle_results = []
     sorted_results = []
-    for N in range(10, 1000, 10):
+    data_sizes = range(10, 1000, 10)
+    for N in data_sizes:
         shuffle_mean = []
         sorted_mean = []
         for _ in range(num_trials):
@@ -148,12 +150,38 @@ def q2_experiment():
         shuffle_results.append(sum(shuffle_mean) / len(shuffle_mean))
         sorted_results.append(sum(sorted_mean) / len(sorted_mean))
 
+    columns = ('N Random Insertions', 'N Sorted Insertions')
+    rows = ["{} nodes".format(x) for x in data_sizes[::10]]
+    cell_text = []
+
+    for time_tuple in zip(shuffle_results[::10], sorted_results[::10]):
+        cell_text.append(["Average path length is {}".format(time_data) for time_data in time_tuple])
+
+    fig = plt.figure(1)
+    plt.suptitle("Q2: Average Path Length")
+    fig.subplots_adjust(left=0.2, top=0.8, wspace=1)
+
+    ax = plt.subplot2grid((2, 2), (1, 0), colspan=4, rowspan=2)
+    ax.table(cellText=cell_text, rowLabels=rows, colLabels=columns, loc='upper center')
+    ax.axis("off")
+
+    plt.subplot2grid((2, 2), (0, 0))
+    plt.plot(data_sizes, shuffle_results)
+    plt.title("BST with Random Insertions", y=1.08)
+    plt.xlabel("Input Size (Number of Nodes)")
+    plt.ylabel("Average Path Length")
+    plt.subplot2grid((2, 2), (0, 1))
+    plt.plot(data_sizes, sorted_results)
+    plt.title("BST with Sorted Insertions", y=1.08)
+    plt.xlabel("Input Size (Number of Nodes)")
+    plt.ylabel("Average Path Length")
+
+    fig.set_size_inches(w=12, h=10)
+    plt.show()
 
 
 def main():
     num_trials = 100
-    shuffle_results = []
-    sorted_results = []
     for N in range(10, 250, 10):
         shuffle_mean = []
         sorted_mean = []
@@ -180,10 +208,7 @@ def main():
                                                                                                    shuffle_mean)))
         print("After {} trials, the average path length for {} sorted insertions is {}".format(num_trials, N,
                                                                                                sum(sorted_mean) / len(
-                                                                                                   sorted_mean)))
-
-        shuffle_results.append(sum(shuffle_mean) / len(shuffle_mean))
-        sorted_results.append(sum(sorted_mean) / len(sorted_mean))
+                                                                                      sorted_mean)))
 
 
 if __name__ == '__main__':
