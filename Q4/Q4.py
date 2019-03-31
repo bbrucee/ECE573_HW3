@@ -1,100 +1,493 @@
+from statistics import stdev
+from random import shuffle
+
+
+# https://github.com/peterhil/leftrb/blob/master/leftrb/bst.py
+
+# !/usr/bin/env python -u
+# encoding: utf-8
+#
+# Leftrb is a Left-Leaning Red-Black tree implementation in Python.
+# Copyright (c) 2013, Peter Hillerström <peter.hillerstrom@gmail.com>
+#
+# This file is part of Leftrb.
+#
+# Leftrb is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3
+# of the License, or (at your option) any later version.
+#
+# Leftrb is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with Leftrb.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Binary search tree.
+"""
+
+
+class BinarySearchTree(object):
+    """
+    Basic unbalanced (inefficient) binary search tree.
+    For extending into different balanced binary trees.
+    """
+    root = None
+
+    class Node(object):
+        """
+        BST tree node.
+        """
+        left = right = None
+
+        def __init__(self, key, val=None):
+            self.key = key
+            self.val = val
+
+        def search(self, key):
+            """
+            Search the subtree for a key. Return a value or None.
+            """
+            if self.key == key:
+                return self.val if self.val is not None else self.key
+            elif key < self.key and self.left:
+                return self.left.search(key)
+            elif self.key < key and self.right:
+                return self.right.search(key)
+            return None
+
+        def insert(self, key, value=None):
+            """
+            Insert a node recursively.
+            """
+            if self.key == key:
+                self.val = value
+            elif key < self.key:
+                if self.left is None:
+                    self.left = self.__class__(key, value)
+                else:
+                    self.left = self.left.insert(key, value)
+            else:
+                if self.right is None:
+                    self.right = self.__class__(key, value)
+                else:
+                    self.right = self.right.insert(key, value)
+            return self
+
+        def min(self):
+            """
+            Smallest node in the subtree.
+            """
+            return self.key if self.left is None else self.left.min()
+
+        def max(self):
+            """
+            Largest node in the subtree.
+            """
+            return self.key if self.right is None else self.right.max()
+
+    def search(self, key):
+        """
+        Search the tree with a key. Return a value or None.
+        """
+        return self.root.search(key) if self.root is not None else None
+
+    def insert(self, key, value=None):
+        """
+        Insert a key with optional value into tree.
+        """
+        self.root = self.Node(key, value) if self.root is None else self.root.insert(key, value)
+
+
+# https://github.com/peterhil/leftrb/blob/master/leftrb/llrb.py
+
+# !/usr/bin/env python -u
+# encoding: utf-8
+#
+# Leftrb is a Left-Leaning Red-Black tree implementation in Python.
+# Copyright (c) 2013, Peter Hillerström <peter.hillerstrom@gmail.com>
+#
+# This file is part of Leftrb.
+#
+# Leftrb is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3
+# of the License, or (at your option) any later version.
+#
+# Leftrb is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with Leftrb.  If not, see <http://www.gnu.org/licenses/>.
+"""
+Leftrb/LLRB is a Left-Leaning Red-Black (LLRB) implementation
+of 2–3 balanced binary search trees in Python.
+This is a straightforward port of the code in the article
+“Left-leaning Red-Black Trees”
+http://www.cs.princeton.edu/~rs/talks/LLRB/LLRB.pdf
+by Robert Sedgewick of Princeton University.
+"""
+
 import sys
-import os
-import csv
+
+__all__ = ['LeftRB']
+
+RED = True
+BLACK = False
 
 
-# https://www.geeksforgeeks.org/insertion-sort/
-# Input is any length array
-# After function call array is sorted
-# Returns number of comparisons
-def insertion_sort(input_array):
-    comparisons = 0
-    for i in range(1, len(input_array)):
-        key = input_array[i]
-        j = i - 1
-        while j >= 0 and key < input_array[j]:
-            comparisons += 1
-            input_array[j + 1] = input_array[j]
-            j -= 1
-        comparisons += 1
-        input_array[j + 1] = key
-    return comparisons
+def is_red(h):
+    """
+    Is the node (h) red?
+    """
+    return isinstance(h, LeftRB.Node) and h.color == RED
 
 
-# https://www.geeksforgeeks.org/python-program-for-shellsort/
-# Input is any length array
-# After function call array is 7-sorted
-# Returns number of comparisons
-def shell7(input_array):
-    comparisons = 0
-    for i in range(7, len(input_array)):
-        key = input_array[i]
-        j = i
-        while j >= 7 and input_array[j - 7] > key:
-            comparisons += 1
-            input_array[j] = input_array[j - 7]
-            j -= 7
-        comparisons += 1
-        input_array[j] = key
-    return comparisons
+def is_black(h):
+    """
+    Is the node (h) black?
+    """
+    return not is_red(h)
 
 
-# Input is any length array
-# After function call array is 3-sorted
-# Returns number of comparisons
-def shell3(input_array):
-    comparisons = 0
-    for i in range(3, len(input_array)):
-        key = input_array[i]
-        j = i
-        while j >= 3 and input_array[j - 3] > key:
-            comparisons += 1
-            input_array[j] = input_array[j - 3]
-            j -= 3
-        comparisons += 1
-        input_array[j] = key
-    return comparisons
+class LeftRB(BinarySearchTree, object):
+    """
+    Left-Leaning Red-Black (LLRB) is an implementation of
+    2–3 balanced binary search tree.
+    Ported to Python from code and description on
+    paper “Left-leaning Red-Black Trees” by Robert Sedgewick:
+    http://www.cs.princeton.edu/~rs/talks/LLRB/LLRB.pdf
+    """
+    root = None
+
+    class Node(BinarySearchTree.Node, object):
+        """
+        LeftRB tree node.
+        """
+
+        def __init__(self, key, val=None):
+            super(self.__class__, self).__init__(key, val)
+            self.color = RED  # new nodes are always red
+            self.height = 1
+
+        def insert(self, key, value=None):
+            """
+            Recursively insert a node with key and optional value into the tree below.
+            """
+            # Move this to the end to get 2-3 trees
+            if is_red(self.left) and is_red(self.right):
+                self._flip_colors()
+
+            self = super(LeftRB.Node, self).insert(key, value)
+
+            if is_red(self.right) and is_black(self.left):
+                self = self._rotate_left()
+            if is_red(self.left) and self.left and is_red(self.left.left):
+                self = self._rotate_right()
+
+            return self._setHeight()
+
+        def size(self):
+            """
+            Number of nodes in the subtree below node.
+            """
+            # TODO Cache into self.N
+            return 1 + sum(map(lambda child: child.size(), filter(None, [self.left, self.right])))
+
+        def __repr__(self):
+            return "<{0} at {1}, key={2}, value={3}, left={6}, right={7}, color={4}, height={5}>".format(
+                self.__class__.__name__,
+                id(self),
+                self.key,
+                self.val,
+                'red' if is_red(self) else 'black',
+                self.height,
+                self.left and self.left.key or None,
+                self.right and self.right.key or None,
+            )
+
+        def _fix_up(self):
+            """
+            Fix the Left-leaning Red-black tree properties
+            with upto two rotations and a possible color flip.
+            """
+            if is_red(self.right):
+                self = self._rotate_left()
+
+            if is_red(self.left) and self.left and is_red(self.left.left):
+                self = self._rotate_right()
+
+            if is_red(self.left) and is_red(self.right):
+                self._flip_colors()
+
+            return self._setHeight()
+
+        def _flip_colors(self):
+            """
+            Flip colors to split a 4-node
+            """
+            self.color = not self.color
+            self.left.color = not self.left.color
+            self.right.color = not self.right.color
+
+        def _move_red_left(self):
+            """
+            Assuming that self is red and both self.left and self.left.left
+            are black, make self.left or one of its children red.
+            """
+            self._flip_colors()
+            if self.right and is_red(self.right.left):
+                self.right = self.right._rotate_right()
+                self = self._rotate_left()
+                self._flip_colors()
+            return self
+
+        def _move_red_right(self):
+            """
+            Assuming that self is red and both self.right and self.right.left
+            are black, make self.right or one of its children red.
+            """
+            self._flip_colors()
+            if self.left and is_red(self.left.left):
+                self = self._rotate_right()
+                self._flip_colors()
+            return self
+
+        def _rotate_left(self):
+            """
+            Left rotate (right link of self)
+                   V         |          V <--left or right, red or black
+                   |         |          |
+            out<--(x)   <<< LEFT       (s) <--in
+                 // \        |         / \\  <--red
+               (s)   3       |        1   (x)
+               / \           |            / \
+              1   2          |           2   3
+            """
+            x = self.right
+            self.right = x.left
+            x.left = self
+            x.color = self.color
+            self.color = RED
+            return x
+
+        def _rotate_right(self):
+            """
+            Right rotate (left link of self)
+                   V         |          V <--left or right, red or black
+                   |         |          |
+            in--> (s)     RIGHT >>>    (x)-->out
+                 // \        |         / \\  <--red
+               (x)   3       |        1   (s)
+               / \           |            / \
+              1   2          |           2   3
+            """
+            x = self.left
+            self.left = x.right
+            x.right = self
+            x.color = self.color
+            self.color = RED
+            return x
+
+        def _delete(self, key):
+            """
+            Delete a node with the given key (recursively) from the tree below.
+            """
+            assert self.search(key) is not None
+
+            if key < self.key:
+                if is_black(self.left) and self.left and is_black(self.left.left):
+                    self = self._move_red_left()
+                self.left = self.left._delete(key)
+            else:
+                if is_red(self.left):
+                    self = self._rotate_right()
+
+                if key == self.key and self.right is None:
+                    return None
+
+                if is_black(self.right) and self.right and is_black(self.right.left):
+                    self = self._move_red_right()
+
+                if key == self.key:
+                    self.value = self.right.search(self.right.min())
+                    self.key = self.right.min()
+                    self.right = self.right._delete_min()
+                else:
+                    self.right = self.right._delete(key)
+
+            return self._fix_up()
+
+        def _delete_min(self):
+            """
+            Delete the smallest node on the (left) subtree below
+            while maintaining balance.
+            """
+            if self.left is None:
+                return None
+
+            if is_black(self.left) and self.left and is_black(self.left.left):
+                self = self._move_red_left()
+
+            self.left = self.left._delete_min()
+
+            return self._fix_up()
+
+        def _delete_max(self):
+            """
+            Delete the largest node on the (right) subtree below
+            while maintaining balance.
+            """
+            if is_red(self.left):
+                self = self._rotate_right()
+
+            if self.right is None:
+                return None
+
+            if is_black(self.right) and self.right and is_black(self.right.left):
+                self = self._move_red_right()
+
+            self.right = self.right._delete_max()
+
+            return self._fix_up()
+
+        def _setHeight(self):
+            """
+            Update height.
+            """
+            self.height = 1 + max(self.left and self.left.height or 0,
+                                  self.right and self.right.height or 0)
+            return self
+
+    def is_empty(self):
+        """
+        Is the tree empty?
+        """
+        return self.root is None
+
+    def __contains__(self, key):
+        """
+        Does the tree contain key?
+        """
+        return self.search(key) is not None
+
+    def __len__(self):
+        """
+        Number of nodes in the tree.
+        """
+        return 0 if self.root is None else self.root.size()
+
+    def height(self):
+        """
+        Height of the tree.
+        """
+        return 0 if self.root is None else self.root.height
+
+    def min(self):
+        """
+        Smallest node in the tree.
+        """
+        return None if self.root is None else self.root.min()
+
+    def max(self):
+        """
+        Largest node in the tree.
+        """
+        return None if self.root is None else self.root.max()
+
+    def insert(self, key, value=None):
+        """
+        Insert a key with optional value into the tree.
+        """
+        super(LeftRB, self).insert(key, value)
+        self.root.color = BLACK
+
+    def delete(self, key):
+        """
+        Delete a node with the given key from the tree.
+        """
+        if key not in self:
+            sys.stderr.write("Tree does not contain key '{0}'.\n".format(key))
+            return False
+
+        if is_black(self.root.left) and is_black(self.root.right):
+            self.root.color = RED
+
+        if self.root is not None:
+            self.root = self.root._delete(key)
+
+        if not self.is_empty():
+            self.root.color = BLACK
+
+    def delete_min(self):
+        """
+        Delete the smallest node while maintaining balance.
+        """
+        self.root = self.root._delete_min()
+        self.root.color = BLACK
+
+    def delete_max(self):
+        """
+        Delete the largest node while maintaining balance.
+        """
+        self.root = self.root._delete_max()
+        self.root.color = BLACK
 
 
-# Input is any length array
-# After function call array is sorted
-# Returns number of comparisons
-def shell_sort(input_array):
-    comparisons = 0
-    insertion_partial = 0
-    comparisons += shell7(input_array)
-    comparisons += shell3(input_array)
-    insertion_partial += insertion_sort(input_array)
-    return comparisons+insertion_partial, insertion_partial
+del BinarySearchTree
 
 
-def parse_input_file(input_file):
-    data_array = []
-    for line in input_file.readlines():
-        print(line)
-        # data_array.append(int(line))
-    print("Input data: {}".format(data_array))
-    return data_array
+# https://stackoverflow.com/questions/36242046/internal-path-length-of-red-black-tree
+def internal_path_length(root_node, curr_depth = 0):
+        """
+        Computes internal path length
+        """
+        if not root_node:
+            return 0
+        else:
+            return curr_depth + internal_path_length(root_node.left, curr_depth+1) + internal_path_length(root_node.right, curr_depth+1)
+
+
+def q4_experiment():
+    num_trials = 10
+    for N in [1] + list(range(500, 10001, 500)):
+        result_vector = []
+        for _ in range(num_trials):
+            shuffled_inserts = list(range(N))
+            shuffle(shuffled_inserts)
+            llrb = LeftRB()
+            for insert in shuffled_inserts:
+                llrb.insert(insert)
+            result_vector.append(internal_path_length(llrb.root) / N)
+
+        standard_dev = stdev(result_vector)
+        mean = sum(result_vector) / len(result_vector)
+
+        print("For {} trials and {} random node insertions, the average path length is {} with std dev {}".format(
+            num_trials, N, mean, standard_dev))
 
 
 def main():
-    try:
-        # https://stackoverflow.com/questions/7165749/open-file-in-a-relative-location-in-python
-        rel_path = "/data/data1.1024"
-        cwd = os.getcwd()
-        abs_file_path = cwd + rel_path
-        input_file = open(abs_file_path)
-        data_array = []
-        for line in input_file.readlines():
-            data_array.append(int(line))
-        input_file.close()
-        print("Input data: {}".format(data_array))
-        print("Shell sort called on data_array, used (total, insertion phase) -> {}".format(shell_sort(data_array)))
-        print("Does sorted(data_array) equal data_array after shell_sort?: {}".format(data_array == sorted(data_array)))
+    num_trials = 10
+    for N in [1] + list(range(500, 10001, 500)):
+        result_vector = []
+        for _ in range(num_trials):
+            shuffled_inserts = list(range(N))
+            shuffle(shuffled_inserts)
+            llrb = LeftRB()
+            for insert in shuffled_inserts:
+                llrb.insert(insert)
+            result_vector.append(internal_path_length(llrb.root) / N)
 
-    except IndexError:
-        print("No input data file")
+        standard_dev = stdev(result_vector)
+        mean = sum(result_vector) / len(result_vector)
 
+        print("For {} trials and {} random node insertions, the average path length is {} with std dev {}".format(
+            num_trials, N, mean, standard_dev))
 
 if __name__ == '__main__':
     main()

@@ -5,9 +5,7 @@ By Brendan Bruce
 
 Written and Tested on Python 3.5.6
 
-**Q\* Folders** contain **Q\*.py** scripts and necessary data files to run scripts
-
-**experiments.py** generates any figures for the report
+**Q\* Folders** contain **Q\*.py** scripts, necessary data files to run scripts and experiments/figures
 
 **HW3_Report.ipynb** is the notebook used to generate the report pdf
 
