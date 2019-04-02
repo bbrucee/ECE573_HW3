@@ -121,6 +121,24 @@ def select(root, key):
     return q[key]
 
 
+def q5_experiment():
+    rel_path = "/q5/data/select-data.txt"
+    cwd = os.getcwd()
+    abs_file_path = cwd + rel_path
+    input_file = open(abs_file_path)
+    data_array = []
+    print("Loading data from {}".format(abs_file_path))
+    for line in input_file.readlines():
+        data_array.append(int(line))
+    input_file.close()
+    print("Adding data to a Binary Search Tree")
+    tree = BinarySearchTree()
+    for node in data_array:
+        tree.insert(node, node)
+    print("Result from select(7) is {}".format(select(tree.root, 7)))
+    print("Result from rank(7) is {}".format(rank(tree.root, 7)))
+
+
 def main():
     try:
         if len(sys.argv) > 1:

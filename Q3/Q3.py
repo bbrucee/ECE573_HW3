@@ -1,3 +1,4 @@
+from random import randint
 from random import shuffle
 
 # https://github.com/peterhil/leftrb/blob/master/leftrb/bst.py
@@ -466,8 +467,7 @@ def q3_experiment():
     for N in [10000, 100000, 1000000]:
         results = []
         for _ in range(num_trials):
-            shuffled_inserts = list(range(N))
-            shuffle(shuffled_inserts)
+            shuffled_inserts = [randint(1, N) for _ in range(N)]
             llrb = LeftRB()
             for insert in shuffled_inserts:
                 llrb.insert(insert)
@@ -481,8 +481,7 @@ def main():
     for N in [10000, 100000]:  # , 1000000]:
         results = []
         for _ in range(num_trials):
-            shuffled_inserts = list(range(N))
-            shuffle(shuffled_inserts)
+            shuffled_inserts = [randint(1, N) for _ in range(N)]
             llrb = LeftRB()
             for insert in shuffled_inserts:
                 llrb.insert(insert)
