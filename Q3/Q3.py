@@ -441,12 +441,17 @@ del BinarySearchTree
 
 def inorder_traverse(nood):
     red_count = 0
-    if not nood:
-        return 0
+    if not nood.left or not nood.right:
+        if is_red(nood):
+            return 1
+        else:
+            return 0
+
     red_count += inorder_traverse(nood.left)
     if is_red(nood):
         red_count += 1
     red_count += inorder_traverse(nood.right)
+
     return red_count
 
 
@@ -467,7 +472,7 @@ def q3_experiment():
             for insert in shuffled_inserts:
                 llrb.insert(insert)
             results.append(red_percentage(llrb))
-        print("Average red node percentage after {} trials is {}% for {} random nodes".format(num_trials, 100*sum(results)/len(results),N))
+        print("Average red node percentage after {} trials is {:.2f}% for {} random nodes".format(num_trials, 100*sum(results)/len(results),N))
 
 
 def main():
@@ -482,7 +487,7 @@ def main():
             for insert in shuffled_inserts:
                 llrb.insert(insert)
             results.append(red_percentage(llrb))
-        print("Average red node percentage after {} trials is {}% for {} random nodes".format(num_trials,
+        print("Average red node percentage after {} trials is {:.2f}% for {} random nodes".format(num_trials,
                                                                                               100 * sum(results) / len(
                                                                                                   results), N))
 

@@ -118,7 +118,7 @@ def q2_experiment():
     num_trials = 100
     shuffle_results = []
     sorted_results = []
-    data_sizes = range(10, 1000, 10)
+    data_sizes = range(10, 800, 10)
     for N in data_sizes:
         shuffle_mean = []
         sorted_mean = []
@@ -140,12 +140,6 @@ def q2_experiment():
 
             sorted_internal_path_length = internal_path_length(sorted_experiment.root)
             sorted_mean.append(sorted_internal_path_length / N)
-        print("After {} trials, the average path length for {} random insertions is {}".format(num_trials, N,
-                                                                                               sum(shuffle_mean) / len(
-                                                                                                   shuffle_mean)))
-        print("After {} trials, the average path length for {} sorted insertions is {}".format(num_trials, N,
-                                                                                               sum(sorted_mean) / len(
-                                                                                                   sorted_mean)))
 
         shuffle_results.append(sum(shuffle_mean) / len(shuffle_mean))
         sorted_results.append(sum(sorted_mean) / len(sorted_mean))
@@ -155,7 +149,7 @@ def q2_experiment():
     cell_text = []
 
     for time_tuple in zip(shuffle_results[::10], sorted_results[::10]):
-        cell_text.append(["Average path length is {}".format(time_data) for time_data in time_tuple])
+        cell_text.append(["Average path length is {:.2f}".format(time_data) for time_data in time_tuple])
 
     fig = plt.figure(1)
     plt.suptitle("Q2: Average Path Length")
@@ -203,10 +197,10 @@ def main():
 
             sorted_internal_path_length = internal_path_length(sorted_experiment.root)
             sorted_mean.append(sorted_internal_path_length / N)
-        print("After {} trials, the average path length for {} random insertions is {}".format(num_trials, N,
+        print("After {} trials, the average path length for {:.2f} random insertions is {}".format(num_trials, N,
                                                                                                sum(shuffle_mean) / len(
                                                                                                    shuffle_mean)))
-        print("After {} trials, the average path length for {} sorted insertions is {}".format(num_trials, N,
+        print("After {} trials, the average path length for {:.2f} sorted insertions is {}".format(num_trials, N,
                                                                                                sum(sorted_mean) / len(
                                                                                       sorted_mean)))
 

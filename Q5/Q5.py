@@ -1,5 +1,5 @@
 import os
-
+import sys
 
 # https://github.com/peterhil/leftrb/blob/master/leftrb/bst.py
 
@@ -123,8 +123,10 @@ def select(root, key):
 
 def main():
     try:
-        # https://stackoverflow.com/questions/7165749/open-file-in-a-relative-location-in-python
-        rel_path = "/data/select-data.txt"
+        if len(sys.argv) > 1:
+            rel_path = sys.argv[1]
+        else:
+            rel_path = "/data/select-data.txt"
         cwd = os.getcwd()
         abs_file_path = cwd + rel_path
         input_file = open(abs_file_path)

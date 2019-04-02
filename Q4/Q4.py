@@ -467,7 +467,7 @@ def q4_experiment():
         standard_dev = stdev(result_vector)
         mean = sum(result_vector) / len(result_vector)
 
-        print("For {} trials and {} random node insertions, the average path length is {} with std dev {}".format(
+        print("For {} trials and {} random node insertions, the average path length is {:.2f} with std dev {:.2f}".format(
             num_trials, N, mean, standard_dev))
 
 
@@ -486,7 +486,7 @@ def main():
         standard_dev = stdev(result_vector)
         mean = sum(result_vector) / len(result_vector)
 
-        print("For {} trials and {} random node insertions, the average path length is {} with std dev {}".format(
+        print("For {} trials and {} random node insertions, the average path length is {:.2f} with std dev {:.2f}".format(
             num_trials, N, mean, standard_dev))
 
 
